@@ -1,4 +1,4 @@
-# Cyber Secret Scanner Pro 🔐
+Cyber Secret Scanner Pro 
 
 Developed by **[Meera V Nair (meeravnair)](https://github.com/meeravnair)**
 
@@ -11,7 +11,7 @@ Developed for enterprise auditing, it incorporates precompiled high-fidelity reg
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 *   **Recursive Directory Auditing:** Traverses folders efficiently, filtering out binary files and unsupported extensions to optimize scanning.
 *   **Dual-Engine Scanning:**
@@ -59,6 +59,7 @@ CyberSecretScanner/
    ```bash
    pip install -r requirements.txt
    ```
+<img width="388" height="110" alt="Screenshot 2026-07-01 110811" src="https://github.com/user-attachments/assets/3d897c6b-dc95-43b1-aba1-76c081dba9f5" />
 
 ---
 
@@ -79,6 +80,7 @@ python scanner.py samples/ --entropy 5.2
 # Exclude specific report formats
 python scanner.py samples/ --no-csv --no-json
 ```
+<img width="530" height="254" alt="Screenshot 2026-07-01 110827" src="https://github.com/user-attachments/assets/bb0375b8-d3c4-4855-9179-9797320a4beb" />
 
 ### CLI Command Options
 
@@ -100,6 +102,8 @@ Every scan produces three distinct reports saved inside `reports/`:
 1.  **HTML Dashboard (`scan_report.html`):** An interactive, fully responsive, self-contained dashboard. Includes interactive search, severity-filtering dropdown, file sort indicators, details drawer with secret description, and Chart.js telemetry charts.
 2.  **JSON Database (`scan_report.json`):** Contains complete audit data structure including scanned file lists, SHA-256 hashes, vulnerability details, and scanning execution metadata.
 3.  **CSV Logfile (`scan_report.csv`):** Standard flat spreadsheet file listing findings, suitable for importing into custom SOC/SIEM setups.
+<img width="522" height="416" alt="Screenshot 2026-07-01 110848" src="https://github.com/user-attachments/assets/1c40eb25-fd24-4792-9999-23ee8fe9900c" />
+<img width="586" height="386" alt="image" src="https://github.com/user-attachments/assets/56a7871c-62a3-42e8-bc7b-f4f5398b5500" />
 
 ---
 
