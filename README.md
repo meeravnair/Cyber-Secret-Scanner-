@@ -24,7 +24,7 @@ Developed for enterprise auditing, it incorporates precompiled high-fidelity reg
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 CyberSecretScanner/
@@ -51,7 +51,7 @@ CyberSecretScanner/
 
 ---
 
-## 🛠️ Installation & Setup
+##  Installation & Setup
 
 1. **Prerequisites:** Python 3.11+ is required.
 2. **Clone/Extract** the project to your workspace directory.
@@ -63,7 +63,7 @@ CyberSecretScanner/
 
 ---
 
-## 💻 Usage
+##  Usage
 
 Run the scanner directly from the command line by pointing to the target folder you want to audit:
 
@@ -96,7 +96,7 @@ python scanner.py samples/ --no-csv --no-json
 
 ---
 
-## 📊 Output Formats
+## Output Formats
 
 Every scan produces three distinct reports saved inside `reports/`:
 1.  **HTML Dashboard (`scan_report.html`):** An interactive, fully responsive, self-contained dashboard. Includes interactive search, severity-filtering dropdown, file sort indicators, details drawer with secret description, and Chart.js telemetry charts.
@@ -107,7 +107,7 @@ Every scan produces three distinct reports saved inside `reports/`:
 
 ---
 
-## 🛡️ Future Improvements
+## Future Improvements
 
 *   **Pre-commit Hook Integration:** Add Git pre-commit configuration blocks to prevent developers from committing exposed secrets.
 *   **Git History Scans:** Traverse Git history/commits to identify deleted secrets.
@@ -116,6 +116,6 @@ Every scan produces three distinct reports saved inside `reports/`:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
