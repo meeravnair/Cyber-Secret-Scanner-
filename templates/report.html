@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan Report - Cyber Secret Scanner Pro</title>
+    <style>
+        /* Embed inline CSS from stylesheet fallback */
+        {{ css_content | safe }}
+    </style>
+    <!-- Include Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Include Chart.js for premium visualization dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-theme">
+    <div class="dashboard-container">
+        
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-logo-section">
+                {% if logo_base64 %}
+                <img src="data:image/png;base64,{{ logo_base64 }}" alt="Cyber Secret Scanner Pro Logo" class="app-logo">
+                {% else %}
+                <div class="logo-placeholder">CSS</div>
+                {% endif %}
+                <div class="header-text">
+                    <h1>Cyber Secret Scanner Pro</h1>
+                    <p class="subtitle">Production-Grade Secret Exposure Scanning Dashboard & Audit Report</p>
+                    <p class="author-tag">Developed by: <a href="https://github.com/meeravnair" target="_blank" style="color: #7a8bff; text-decoration: none; font-weight: 500;">Meera V Nair (meeravnair)</a></p>
+                </div>
+            </div>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Scan Date:</span>
+                    <span class="meta-value" id="scan-date">{{ stats.start_time }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Version:</span>
+                    <span class="meta-value">v{{ version }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Stats Grid -->
+        <section class="stats-grid">
+            
+            <!-- Security Score Card -->
+            <div class="card score-card rating-{{ risk_rating | lower }}">
+                <div class="card-glow"></div>
+                <h3>Security Risk Index</h3>
+                <div class="score-circle-container">
+                    <div class="score-circle">
+                        <span class="score-number">{{ security_score }}</span>
+                        <span class="score-max">/ 100</span>
+                    </div>
+                </div>
+                <div class="score-rating">
+                    <span class="rating-label">Posture:</span>
+                    <span class="rating-badge">{{ risk_rating }}</span>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="card summary-metric">
+                <div class="metric-icon total-secrets">🔐</div>
+                <div class="metric-info">
+                    <span class="metric-value">{{ stats.total_findings }}</span>
+                    <span class="metric-label">Secrets Exposed</span>
+                </div>
+            </div>
+
+            <div class="card summary-metric">
+                <div class="metric-icon files-scanned">📄</div>
+                <div class="metric-info">
+                    <span class="metric-value">{{ stats.files_scanned }}</span>
+                    <span class="metric-label">Scanned Files</span>
+                </div>
+            </div>
+
+            <div class="card summary-metric">
+                <div class="metric-icon duration">⏱️</div>
+                <div class="metric-info">
+                    <span class="metric-value">{{ stats.duration_seconds }}s</span>
+                    <span class="metric-label">Scan Duration</span>
+                </div>
+            </div>
+
+            <!-- Folders Scanned -->
+            <div class="card summary-metric">
+                <div class="metric-icon folders-scanned">📁</div>
+                <div class="metric-info">
+                    <span class="metric-value">{{ stats.folders_scanned }}</span>
+                    <span class="metric-label">Folders Audited</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Charts Layout Section -->
+        <section class="charts-section">
+            <!-- Pie Chart Card -->
+            <div class="card chart-card">
+                <h3>Severity Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="severityPieChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Bar Chart Card -->
+            <div class="card chart-card">
+                <h3>Secrets Type Analysis</h3>
+                <div class="chart-container">
+                    <canvas id="secretTypesBarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Findings Table Section -->
+        <section class="findings-section card">
+            <div class="findings-header">
+                <h2>Vulnerability Findings Logs</h2>
+                <div class="table-controls">
+                    <input type="text" id="tableSearch" placeholder="Search by file or secret type..." onkeyup="filterTable()">
+                    <select id="severityFilter" onchange="filterTable()">
+                        <option value="ALL">All Severities</option>
+                        <option value="CRITICAL">Critical</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Responsive Table -->
+            <div class="table-wrapper">
+                <table id="findingsTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable(0)">File Path <span class="sort-icon">⇅</span></th>
+                            <th onclick="sortTable(1)" style="width: 100px;">Line <span class="sort-icon">⇅</span></th>
+                            <th onclick="sortTable(2)">Type <span class="sort-icon">⇅</span></th>
+                            <th onclick="sortTable(3)">Severity <span class="sort-icon">⇅</span></th>
+                            <th>Masked Match</th>
+                            <th style="width: 80px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if findings %}
+                            {% for f in findings %}
+                            <tr class="finding-row severity-row-{{ f.severity | lower }}">
+                                <td class="file-cell" title="{{ f.file_path }}">{{ f.file_path }}</td>
+                                <td><code>{{ f.line_number }}</code></td>
+                                <td><strong>{{ f.secret_type }}</strong></td>
+                                <td>
+                                    <span class="badge badge-{{ f.severity | lower }}">{{ f.severity }}</span>
+                                </td>
+                                <td><code class="masked-text">{{ f.matched_text }}</code></td>
+                                <td>
+                                    <button class="btn-detail" onclick="toggleDetails(this)">Details</button>
+                                </td>
+                            </tr>
+                            <tr class="details-row hidden">
+                                <td colspan="6">
+                                    <div class="details-content">
+                                        <p><strong>Description:</strong> {{ f.description }}</p>
+                                        <p><strong>Timestamp:</strong> <code>{{ f.timestamp }}</code></p>
+                                        <p><strong>SHA256 Hash Signature (Masked context):</strong> <code>{{ f.hashed_secret }}</code></p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="no-findings">
+                                    🎉 No exposed secrets detected in this scan! Posture is secure.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Scanned Files Integrity Section -->
+        <section class="integrity-section card">
+            <h2>Scanned Files Metadata & Integrity Check</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File Path</th>
+                            <th style="width: 120px;">Size</th>
+                            <th style="width: 100px;">Lines</th>
+                            <th>SHA-256 Hash Integrity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in scanned_files %}
+                        <tr>
+                            <td class="file-cell">{{ file.file_path }}</td>
+                            <td>{{ (file.file_size_bytes / 1024) | round(2) }} KB</td>
+                            <td>{{ file.line_count }}</td>
+                            <td><code class="hash-code">{{ file.sha256_hash }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>Generated by Cyber Secret Scanner Pro &copy; 2026. Confidential and proprietary.</p>
+        </footer>
+
+    </div>
+
+    <!-- Scripting for interactive dashboard -->
+    <script>
+        // Formats ISO Timestamps to user friendly representation
+        document.addEventListener("DOMContentLoaded", () => {
+            const dateSpan = document.getElementById("scan-date");
+            if (dateSpan) {
+                const dateStr = dateSpan.textContent;
+                try {
+                    const d = new Date(dateStr);
+                    dateSpan.textContent = d.toLocaleString();
+                } catch(e) {}
+            }
+            renderCharts();
+        });
+
+        // Toggle Details Row
+        function toggleDetails(btn) {
+            const row = btn.closest('tr');
+            const detailsRow = row.nextElementSibling;
+            if (detailsRow && detailsRow.classList.contains('details-row')) {
+                detailsRow.classList.toggle('hidden');
+                btn.textContent = detailsRow.classList.contains('hidden') ? 'Details' : 'Hide';
+            }
+        }
+
+        // Table search and filtering
+        function filterTable() {
+            const input = document.getElementById("tableSearch");
+            const filter = input.value.toUpperCase();
+            const severityFilter = document.getElementById("severityFilter").value;
+            const table = document.getElementById("findingsTable");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const mainRow = tr[i];
+                // Skip details rows
+                if (mainRow.classList.contains('details-row')) continue;
+
+                const fileCell = mainRow.getElementsByTagName("td")[0];
+                const typeCell = mainRow.getElementsByTagName("td")[2];
+                const severityCell = mainRow.getElementsByTagName("td")[3];
+
+                if (fileCell && typeCell && severityCell) {
+                    const fileText = fileCell.textContent || fileCell.innerText;
+                    const typeText = typeCell.textContent || typeCell.innerText;
+                    const severityText = severityCell.querySelector('.badge').textContent || severityCell.querySelector('.badge').innerText;
+
+                    const matchesSearch = (fileText.toUpperCase().indexOf(filter) > -1 || typeText.toUpperCase().indexOf(filter) > -1);
+                    const matchesSeverity = (severityFilter === "ALL" || severityText.toUpperCase() === severityFilter.toUpperCase());
+
+                    if (matchesSearch && matchesSeverity) {
+                        mainRow.style.display = "";
+                    } else {
+                        mainRow.style.display = "none";
+                        // Close detail row if it was open
+                        const detailsRow = mainRow.nextElementSibling;
+                        if (detailsRow && detailsRow.classList.contains('details-row')) {
+                            detailsRow.classList.add('hidden');
+                            mainRow.querySelector('.btn-detail').textContent = 'Details';
+                        }
+                    }
+                }
+            }
+        }
+
+        // Table Sorting
+        let sortDirections = {};
+        function sortTable(colIndex) {
+            const table = document.getElementById("findingsTable");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr:not(.details-row)"));
+            
+            // Toggle direction
+            const currentDir = sortDirections[colIndex] || 'asc';
+            const nextDir = currentDir === 'asc' ? 'desc' : 'asc';
+            sortDirections[colIndex] = nextDir;
+
+            const sorted = rows.sort((a, b) => {
+                const cellA = a.getElementsByTagName("td")[colIndex].textContent.trim();
+                const cellB = b.getElementsByTagName("td")[colIndex].textContent.trim();
+
+                // If column is numeric
+                if (colIndex === 1) {
+                    return nextDir === 'asc' ? parseInt(cellA) - parseInt(cellB) : parseInt(cellB) - parseInt(cellA);
+                }
+                
+                return nextDir === 'asc' 
+                    ? cellA.localeCompare(cellB) 
+                    : cellB.localeCompare(cellA);
+            });
+
+            // Re-append rows in sorted order, keeping detail rows paired with parent rows
+            sorted.forEach(row => {
+                const detail = row.nextElementSibling;
+                tbody.appendChild(row);
+                if (detail && detail.classList.contains('details-row')) {
+                    tbody.appendChild(detail);
+                }
+            });
+        }
+
+        // Render Charts using Chart.js CDN with styled theme overrides
+        function renderCharts() {
+            // Aggregate Severity Counts from DOM to align Chart.js dashboard
+            const severityCounts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+            const secretTypes = {};
+
+            const rows = document.querySelectorAll("#findingsTable tbody tr:not(.details-row)");
+            rows.forEach(row => {
+                const badge = row.querySelector('.badge');
+                if (badge) {
+                    const sev = badge.textContent.trim().toUpperCase();
+                    if (sev in severityCounts) severityCounts[sev]++;
+                }
+
+                const typeCell = row.getElementsByTagName("td")[2];
+                if (typeCell) {
+                    const type = typeCell.textContent.trim();
+                    secretTypes[type] = (secretTypes[type] || 0) + 1;
+                }
+            });
+
+            const ctxPie = document.getElementById('severityPieChart').getContext('2d');
+            const hasData = Object.values(severityCounts).some(v => v > 0);
+
+            // Doughnut Chart for Severity
+            new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: hasData ? [severityCounts.CRITICAL, severityCounts.HIGH, severityCounts.MEDIUM, severityCounts.LOW] : [0, 0, 0, 1],
+                        backgroundColor: hasData ? ['#ff2b56', '#ff5f38', '#ffb938', '#00d084'] : ['#2a2a35'],
+                        borderWidth: 2,
+                        borderColor: '#191924'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e4e4eb',
+                                font: { family: 'Outfit', size: 12 }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // Bar Chart for Secret Types
+            const barLabels = Object.keys(secretTypes);
+            const barData = Object.values(secretTypes);
+
+            const ctxBar = document.getElementById('secretTypesBarChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: barLabels.length ? barLabels : ['No Secrets'],
+                    datasets: [{
+                        label: 'Exposure Count',
+                        data: barData.length ? barData : [0],
+                        backgroundColor: '#5263ff',
+                        borderColor: '#7a8bff',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#e4e4eb', font: { family: 'Outfit' } }
+                        },
+                        y: {
+                            grid: { color: '#2a2a35' },
+                            ticks: { stepSize: 1, color: '#e4e4eb', font: { family: 'Outfit' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

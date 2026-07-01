@@ -1,0 +1,13 @@
+{
+  "project": "Vulnerable demo config",
+  "google_oauth": {
+    "client_id": "1234567890-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com",
+    "client_secret": "GOCSPX-abcdefghijklmnopqrstuvwxyz12"
+  },
+  "firebase": {
+    "databaseURL": "https://vulnerable-app-default-rtdb.firebaseio.com"
+  },
+  "discord": {
+    "bot_token": "ODU5NTMyNzQ0ODQ3MTM4ODE2.YNuGZg.abcdefghijklmnopqrstuvwxyz123456789"
+  }
+}

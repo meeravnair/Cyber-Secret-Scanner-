@@ -1,0 +1,10 @@
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA0yGx5N/8yWv2D9o9GZLeM4x0h0vC8n3eK8j6h8K5t5m6Y7eE
++H2lGq... (synthetic RSA Private Key example content for scanning validation)
+-----END RSA PRIVATE KEY-----
+
+Here is a GitHub Personal Access Token (PAT) we forgot to delete:
+ghp_abcdefghijklmnopqrstuvwxyz0123456789
+
+And here is a basic auth header:
+Basic YWRtaW46cGFzc3dvcmQxMjM=
